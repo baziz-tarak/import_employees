@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Employee Management System</title>
+
+    <!-- CSS Libraries -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.24.2/dist/bootstrap-table.min.css">
+    
+    <style>
+        body {
+            background-color: #f5f8fa;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .container {
+            max-width: 1800px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.12);
+            padding: 30px;
+            margin-top: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eaeef2;
+        }
+        .select {
+            width: 280px;
+        }
+        .table-responsive {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.08);
+        }
+        .card {
+            border: none;
+            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.12);
+        }
+        .btn-group .btn {
+            border-radius: 8px;
+            margin-right: 8px;
+            font-weight: 500;
+        }
+        .fixed-table-toolbar .search input {
+            border-radius: 8px;
+        }
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+        .table thead th {
+            background-color: #f0f5ff;
+            border-top: none;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        #importPreview {
+            transition: all 0.3s ease;
+        }
+        .like, .edit, .remove, .print, .detail {
+            transition: all 0.2s ease;
+        }
+        .like:hover {
+            color: #dc3545 !important;
+            background-color: rgba(220, 53, 69, 0.1);
+        }
+        .edit:hover {
+            color: #198754 !important;
+            background-color: rgba(25, 135, 84, 0.1);
+        }
+        .remove:hover {
+            color: #dc3545 !important;
+            background-color: rgba(220, 53, 69, 0.1);
+        }
+        .print:hover {
+            color: #0d6efd !important;
+            background-color: rgba(13, 110, 253, 0.1);
+        }
+        .detail:hover {
+            color: #6f42c1 !important;
+            background-color: rgba(111, 66, 193, 0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            font-weight: 700;
+            font-size: 28px;
+        }
+        .admin-dropdown {
+            min-width: 220px;
+        }
+        .selection-count {
+            background-color: #0d6efd;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+        .employee-photo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #eaeef2;
+        }
+        .status-badge {
+            padding: 5px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            min-width: 80px;
+            display: inline-block;
+        }
+        .status-active {
+            background-color: #e0f7ea;
+            color: #198754;
+        }
+        .status-onleave {
+            background-color: #fff3cd;
+            color: #fd7e14;
+        }
+        .status-inactive {
+            background-color: #f8d7da;
+            color: #dc3545;
+        }
+        
+        .motivation-badge {
+            position: relative;
+            margin-left: 15px;
+        }
+        .motivation-icon {
+            font-size: 24px;
+            color: #ffc107;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .motivation-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .age-highlight {
+            background-color: #fff3cd;
+            font-weight: 600;
+        }
+        .storage-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #198754;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .detail-modal-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #eaeef2;
+            margin: 0 auto 20px;
+            display: block;
+        }
+        .detail-modal-header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border-radius: 12px 12px 0 0;
+        }
+        .detail-modal-body {
+            padding: 30px;
+        }
+        .detail-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f1f1f1;
+        }
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            font-weight: 600;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+        .detail-value {
+            font-size: 16px;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1><i class="fas fa-users me-2"></i>Employee Management System</h1>
+                <div id="motivationBadge" class="motivation-badge d-none">
+                    <i class="fas fa-trophy motivation-icon"></i>
+                    <span class="motivation-count" id="motivationCount">0</span>
+                </div>
+            </div>
+            <div class="select">
+                <select id="locale" class="form-select">
+                    <option value="export">Export to PDF</option>
+                    <option value="en-US" selected>English (US)</option>
+                    <option value="es-ES">Spanish</option>
+                    <option value="fr-FR">French</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="toolbar" class="btn-toolbar mb-4" role="toolbar">
+            <div class="btn-group me-2">
+                <button id="importBtn" class="btn btn-success">
+                    <i class="fa fa-file-excel me-1"></i> Import Excel
+                </button>
+                <button id="saveImportTemplate" class="btn btn-info">
+                    <i class="fa fa-download me-1"></i> Save Import Template
+                </button>
+                <button id="remove" class="btn btn-danger" disabled>
+                    <i class="fa fa-trash me-1"></i> Delete
+                </button>
+                <button id="addNew" class="btn btn-primary">
+                    <i class="fa fa-plus me-1"></i> Add Employee
+                </button>
+            </div>
+            <div class="btn-group me-2">
+                <div class="input-group">
+                    <select id="adminDocuments" class="form-select admin-dropdown" disabled>
+                        <option value="">Select Document Type</option>
+                        <option value="employmentContract">Employment Contract</option>
+                        <option value="salarySlip">Salary Slip</option>
+                        <option value="performanceReview">Performance Review</option>
+                        <option value="verificationLetter">Employment Verification</option>
+                        <option value="warningLetter">Warning Letter</option>
+                    </select>
+                    <button id="generateDocument" class="btn btn-info" disabled>
+                        <i class="fa fa-print me-1"></i> Generate
+                        <span id="selectionCount" class="selection-count">0</span>
+                    </button>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button id="resetData" class="btn btn-warning">
+                    <i class="fa fa-undo me-1"></i> Reset Data
+                </button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body p-0 position-relative">
+                <div id="loadingOverlay" class="loading-overlay d-none">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <span class="ms-2">Processing data...</span>
+                </div>
+                <table id="table"
+                    data-toolbar="#toolbar"
+                    data-search="true"
+                    data-search-highlight="true"
+                    data-show-refresh="true"
+                    data-show-toggle="true"
+                    data-show-fullscreen="true"
+                    data-show-columns="true"
+                    data-show-columns-toggle-all="true"
+                    data-show-export="true"
+                    data-click-to-select="true"
+                    data-minimum-count-columns="2"
+                    data-show-pagination-switch="true"
+                    data-pagination="true"
+                    data-page-size="10"
+                    data-page-list="[10, 25, 50, 100]"
+                    data-show-footer="true"
+                    data-id-field="id"
+                    data-unique-id="id"
+                >
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="importModalLabel">Import Employee Data from Excel</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="excelFile" class="form-label">Select Excel File</label>
+                        <input type="file" class="form-control" id="excelFile" accept=".xlsx, .xls" required>
+                        <div class="form-text">Supported columns: Name, Position, Department, Salary, Status, Email, Phone, Hire Date, Date of Recruitment, Date of Last Grade, Date of Naissance</div>
+                    </div>
+                    <div id="importPreview" class="mt-3 d-none">
+                        <h6>Preview <span class="badge bg-info" id="previewCount">0</span>:</h6>
+                        <div class="table-responsive" style="max-height: 300px;">
+                            <table class="table table-sm table-striped" id="previewTable">
+                                <thead class="table-light sticky-top">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Position</th>
+                                        <th>Department</th>
+                                        <th>Salary</th>
+                                        <th>Status</th>
+                                        <th>Date of Naissance</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="importData" disabled>Import Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit/Add Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Edit Employee</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm">
+                        <input type="hidden" id="editId">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editName" class="form-label">Full Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="editName" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editPosition" class="form-label">Position <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="editPosition" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editDepartment" class="form-label">Department <span class="text-danger">*</span></label>
+                                <select class="form-select" id="editDepartment" required>
+                                    <option value="">Select Department</option>
+                                    <option value="HR">Human Resources</option>
+                                    <option value="IT">Information Technology</option>
+                                    <option value="Finance">Finance</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="Operations">Operations</option>
+                                    <option value="Sales">Sales</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editSalary" class="form-label">Salary <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" id="editSalary" step="0.01" min="0" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editEmail" class="form-label">Email <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="editEmail" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editPhone" class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="editPhone">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="editHireDate" class="form-label">Hire Date</label>
+                                <input type="date" class="form-control" id="editHireDate">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="editRecruitmentDate" class="form-label">Date of Recruitment</label>
+                                <input type="date" class="form-control" id="editRecruitmentDate">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="editLastGradeDate" class="form-label">Date of Last Grade</label>
+                                <input type="date" class="form-control" id="editLastGradeDate">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="editBirthDate" class="form-label">Date of Naissance <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="editBirthDate" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="editStatus" class="form-label">Status <span class="text-danger">*</span></label>
+                                <select class="form-select" id="editStatus" required>
+                                    <option value="Active">Active</option>
+                                    <option value="On Leave">On Leave</option>
+                                    <option value="Inactive">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" form="editForm" class="btn btn-primary">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header detail-modal-header">
+                    <h5 class="modal-title text-white" id="detailModalLabel">Employee Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body detail-modal-body">
+                    <img src="https://ui-avatars.com/api/?background=random&name=Employee&size=120" class="detail-modal-img" id="detailImage">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <div class="detail-label">Employee ID</div>
+                                <div class="detail-value" id="detailId"></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Full Name</div>
+                                <div class="detail-value" id="detailName"></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Position</div>
+                                <div class="detail-value" id="detailPosition"></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Department</div>
+                                <div class="detail-value" id="detailDepartment"></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Salary</div>
+                                <div class="detail-value" id="detailSalary"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-item">
+                                <div class="detail-label">Status</div>
+                                <div class="detail-value" id="detailStatus"></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Email</div>
+                                <div class="detail-value" id="detailEmail"></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Phone</div>
+                                <div class="detail-value" id="detailPhone"></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Hire Date</div>
+                                <div class="detail-value" id="detailHireDate"></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Date of Recruitment</div>
+                                <div class="detail-value" id="detailRecruitmentDate"></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Date of Last Grade</div>
+                                <div class="detail-value" id="detailLastGradeDate"></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Date of Naissance</div>
+                                <div class="detail-value" id="detailBirthDate"></div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Age</div>
+                                <div class="detail-value" id="detailAge"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast for notifications -->
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <i class="fas fa-check-circle text-success me-2" id="toastIcon"></i>
+            <strong class="me-auto" id="toastTitle">Success</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toastMessage">
+            Operation completed successfully.
+        </div>
+    </div>
+
+    <!-- Storage Status Indicator -->
+    <div id="storageStatus" class="storage-status d-none">
+        <i class="fas fa-database me-1"></i> Data saved to localStorage
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.24.2/dist/bootstrap-table.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.24.2/dist/bootstrap-table-locale-all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/tableExport.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.24.2/dist/extensions/export/bootstrap-table-export.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script>
+        // Initialize variables
+        const $table = $('#table');
+        const $remove = $('#remove');
+        const $generateDocument = $('#generateDocument');
+        const $adminDocuments = $('#adminDocuments');
+        const $selectionCount = $('#selectionCount');
+        const $resetData = $('#resetData');
+        const $loadingOverlay = $('#loadingOverlay');
+        const toast = new bootstrap.Toast(document.getElementById('liveToast'));
+        let selections = [];
+        let currentData = [];
+        
+        // Fallback employee data with new date fields
+        const fallbackEmployeeData = [
+            { 
+                "id": 1, 
+                "name": "John Smith", 
+                "position": "Software Engineer", 
+                "department": "IT", 
+                "salary": "$85,000", 
+                "status": "Active", 
+                "email": "john.smith@company.com", 
+                "phone": "(555) 123-4567", 
+                "hireDate": "2021-03-15",
+                "recruitmentDate": "2021-03-15",
+                "lastGradeDate": "2023-01-15",
+                "birthDate": "1980-05-12"
+            },
+            { 
+                "id": 2, 
+                "name": "Emily Johnson", 
+                "position": "HR Manager", 
+                "department": "HR", 
+                "salary": "$92,000", 
+                "status": "Active", 
+                "email": "emily.j@company.com", 
+                "phone": "(555) 234-5678", 
+                "hireDate": "2019-08-22",
+                "recruitmentDate": "2019-08-22",
+                "lastGradeDate": "2022-06-15",
+                "birthDate": "1963-11-30"
+            },
+            { 
+                "id": 3, 
+                "name": "Michael Brown", 
+                "position": "Financial Analyst", 
+                "department": "Finance", 
+                "salary": "$78,000", 
+                "status": "Active", 
+                "email": "m.brown@company.com", 
+                "phone": "(555) 345-6789", 
+                "hireDate": "2020-05-10",
+                "recruitmentDate": "2020-05-10",
+                "lastGradeDate": "2022-11-20",
+                "birthDate": "1975-02-18"
+            },
+            { 
+                "id": 4, 
+                "name": "Sarah Davis", 
+                "position": "Marketing Specialist", 
+                "department": "Marketing", 
+                "salary": "$65,000", 
+                "status": "On Leave", 
+                "email": "sarah.d@company.com", 
+                "phone": "(555) 456-7890", 
+                "hireDate": "2022-01-18",
+                "recruitmentDate": "2022-01-18",
+                "lastGradeDate": "2023-03-10",
+                "birthDate": "1960-08-22"
+            }
+        ];
+
+        // Initialize the application
+        $(document).ready(function() {
+            // Load initial data
+            loadEmployeeData();
+            initEventHandlers();
+        });
+
+        // Load employee data from localStorage
+        function loadEmployeeData() {
+            $loadingOverlay.removeClass('d-none');
+            
+            setTimeout(() => {
+                try {
+                    // Try to load data from localStorage
+                    const storedData = localStorage.getItem('employeeData');
+                    let employeeData;
+                    
+                    if (storedData) {
+                        employeeData = JSON.parse(storedData);
+                        showToast('Employee data loaded from localStorage', 'Data Loaded', 'success');
+                    } else {
+                        // If no data in localStorage, use fallback data
+                        employeeData = fallbackEmployeeData;
+                        // Save fallback data to localStorage
+                        saveToLocalStorage(employeeData);
+                        showToast('No saved data found. Using default data.', 'Data Loaded', 'info');
+                    }
+                    
+                    currentData = [...employeeData];
+                    
+                    // Initialize the table with the loaded data
+                    initTable(employeeData);
+                    updateMotivationBadge(employeeData);
+                    
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                    // If loading fails, use fallback data
+                    currentData = [...fallbackEmployeeData];
+                    initTable(fallbackEmployeeData);
+                    updateMotivationBadge(fallbackEmployeeData);
+                    showToast('Error loading data. Using fallback data.', 'Data Load Error', 'error');
+                } finally {
+                    $loadingOverlay.addClass('d-none');
+                }
+            }, 500);
+        }
+
+        // Save data to localStorage
+        function saveToLocalStorage(data) {
+            try {
+                localStorage.setItem('employeeData', JSON.stringify(data));
+                
+                // Show storage status indicator
+                $('#storageStatus').removeClass('d-none');
+                setTimeout(() => {
+                    $('#storageStatus').addClass('d-none');
+                }, 2000);
+                
+                return true;
+            } catch (error) {
+                console.error('Error saving to localStorage:', error);
+                showToast('Error saving data to localStorage', 'Storage Error', 'error');
+                return false;
+            }
+        }
+
+        // Initialize the table with data
+        function initTable(employeeData) {
+            // Destroy the existing table if it exists
+            if ($table.data('bootstrap.table')) {
+                $table.bootstrapTable('destroy');
+            }
+            
+            $table.bootstrapTable({
+                height: 600,
+                locale: $('#locale').val(),
+                data: employeeData,
+                columns: [
+                    {
+                        field: 'state',
+                        checkbox: true,
+                        align: 'center',
+                        valign: 'middle'
+                    },
+                    {
+                        field: 'id',
+                        title: 'ID',
+                        sortable: true,
+                        align: 'center',
+                        valign: 'middle',
+                        footerFormatter: function(value) {
+                            return `Total: ${value.length} employees`;
+                        }
+                    },
+                    {
+                        field: 'name',
+                        title: 'Employee Name',
+                        sortable: true,
+                        align: 'left',
+                        valign: 'middle'
+                    },
+                    {
+                        field: 'position',
+                        title: 'Position',
+                        sortable: true,
+                        align: 'left',
+                        valign: 'middle'
+                    },
+                    {
+                        field: 'department',
+                        title: 'Department',
+                        sortable: true,
+                        align: 'center',
+                        valign: 'middle'
+                    },
+                    {
+                        field: 'salary',
+                        title: 'Salary',
+                        sortable: true,
+                        align: 'center',
+                        valign: 'middle',
+                        footerFormatter: function(data) {
+                            const total = data.reduce((sum, row) => {
+                                return sum + parseFloat(row.salary.replace('$', '').replace(',', ''));
+                            }, 0);
+                            return `Total: $${total.toLocaleString()}`;
+                        }
+                    },
+                    {
+                        field: 'status',
+                        title: 'Status',
+                        sortable: true,
+                        align: 'center',
+                        valign: 'middle',
+                        formatter: statusFormatter
+                    },
+                    {
+                        field: 'birthDate',
+                        title: 'Date of Naissance',
+                        sortable: true,
+                        align: 'center',
+                        valign: 'middle',
+                        formatter: function(value, row) {
+                            const formattedDate = dateFormatter(value);
+                            const age = calculateAge(value);
+                            if (age >= 60) {
+                                return `<span class="age-highlight">${formattedDate} (${age}) <i class="fas fa-trophy text-warning"></i></span>`;
+                            }
+                            return `${formattedDate} (${age})`;
+                        }
+                    },
+                    {
+                        field: 'recruitmentDate',
+                        title: 'Date of Recruitment',
+                        sortable: true,
+                        align: 'center',
+                        valign: 'middle',
+                        formatter: dateFormatter
+                    },
+                    {
+                        field: 'lastGradeDate',
+                        title: 'Date of Last Grade',
+                        sortable: true,
+                        align: 'center',
+                        valign: 'middle',
+                        formatter: dateFormatter
+                    },
+                    {
+                        field: 'actions',
+                        title: 'Actions',
+                        align: 'center',
+                        clickToSelect: false,
+                        formatter: operateFormatter,
+                        events: {
+                            'click .like': function(e, value, row) {
+                                showToast(`You liked employee: ${row.name}`, 'Employee Liked', 'info');
+                            },
+                            'click .edit': function(e, value, row) {
+                                openEditModal(row);
+                            },
+                            'click .remove': function(e, value, row) {
+                                deleteEmployee(row.id);
+                            },
+                            'click .print': function(e, value, row) {
+                                generateEmployeeDocument(row, 'employmentContract');
+                            },
+                            'click .detail': function(e, value, row) {
+                                showEmployeeDetails(row);
+                            }
+                        }
+                    }
+                ]
+            });
+        }
+
+        // Calculate age from birth date
+        function calculateAge(birthDate) {
+            if (!birthDate) return 0;
+            
+            const today = new Date();
+            const birth = new Date(birthDate);
+            let age = today.getFullYear() - birth.getFullYear();
+            const monthDiff = today.getMonth() - birth.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+                age--;
+            }
+            
+            return age;
+        }
+
+        // Update motivation badge with count of employees over 60
+        function updateMotivationBadge(employeeData) {
+            const overSixtyCount = employeeData.filter(emp => {
+                return calculateAge(emp.birthDate) >= 60;
+            }).length;
+            
+            if (overSixtyCount > 0) {
+                $('#motivationBadge').removeClass('d-none');
+                $('#motivationCount').text(overSixtyCount);
+            } else {
+                $('#motivationBadge').addClass('d-none');
+            }
+        }
+
+        // Status formatter
+        function statusFormatter(value, row) {
+            let className = 'status-active';
+            if (value === 'On Leave') className = 'status-onleave';
+            if (value === 'Inactive') className = 'status-inactive';
+            
+            return `<span class="status-badge ${className}">${value}</span>`;
+        }
+
+        // Date formatter
+        function dateFormatter(value) {
+            if (!value) return '-';
+            
+            const date = new Date(value);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        // Initialize event handlers
+        function initEventHandlers() {
+            // Table selection event
+            $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function() {
+                const selectedCount = $table.bootstrapTable('getSelections').length;
+                $remove.prop('disabled', selectedCount === 0);
+                $adminDocuments.prop('disabled', selectedCount === 0);
+                $generateDocument.prop('disabled', selectedCount === 0 || $adminDocuments.val() === '');
+                $selectionCount.text(selectedCount);
+                selections = getIdSelections();
+            });
+
+            // Reset data button handler
+            $resetData.click(function() {
+                if (confirm('Are you sure you want to reset the data? This will reload the original dataset and clear localStorage.')) {
+                    // Clear localStorage
+                    localStorage.removeItem('employeeData');
+                    // Reload the page to reset everything
+                    location.reload();
+                }
+            });
+
+            // Admin documents change event
+            $adminDocuments.change(function() {
+                $generateDocument.prop('disabled', $(this).val() === '' || $table.bootstrapTable('getSelections').length === 0);
+            });
+
+            // Generate document button handler
+            $generateDocument.click(function() {
+                const docType = $adminDocuments.val();
+                const selectedEmployees = getSelectedRows();
+                
+                if (selectedEmployees.length === 0) {
+                    showToast('Please select employees to generate documents', 'Document Generation Error', 'error');
+                    return;
+                }
+                
+                if (docType === '') {
+                    showToast('Please select a document type', 'Document Generation Error', 'error');
+                    return;
+                }
+                
+                generateDocuments(selectedEmployees, docType);
+            });
+
+            // Delete button handler
+            $remove.click(deleteSelectedEmployees);
+
+            // Add new button handler
+            $('#addNew').click(function() {
+                openEditModal({});
+            });
+
+            // Save import template button handler
+            $('#saveImportTemplate').click(saveImportTemplate);
+
+            // Locale change handler
+            $('#locale').change(function() {
+                if ($(this).val() === 'export') {
+                    $table.bootstrapTable('showExportModal');
+                } else {
+                    $table.bootstrapTable('refreshOptions', {
+                        locale: $(this).val()
+                    });
+                }
+            });
+
+            // Import modal handlers
+            $('#importBtn').click(function() {
+                $('#importModal').modal('show');
+                $('#excelFile').val('');
+                $('#importPreview').addClass('d-none');
+                $('#importData').prop('disabled', true);
+                $('#previewTable tbody').empty();
+            });
+
+            // Excel file change handler
+            $('#excelFile').change(handleFileSelect);
+
+            // Import data handler
+            $('#importData').click(importData);
+
+            // Edit form submission handler
+            $('#editForm').submit(saveEmployee);
+        }
+
+        // Action buttons formatter
+        function operateFormatter() {
+            return [
+                '<div class="btn-group" role="group">',
+                '<button type="button" class="btn btn-sm btn-outline-primary like" title="Like">',
+                '<i class="fa fa-heart"></i>',
+                '</button>',
+                '<button type="button" class="btn btn-sm btn-outline-success edit" title="Edit">',
+                '<i class="fa fa-edit"></i>',
+                '</button>',
+                '<button type="button" class="btn btn-sm btn-outline-info print" title="Print">',
+                '<i class="fa fa-print"></i>',
+                '</button>',
+                '<button type="button" class="btn btn-sm btn-outline-secondary detail" title="View Details">',
+                '<i class="fa fa-eye"></i>',
+                '</button>',
+                '<button type="button" class="btn btn-sm btn-outline-danger remove" title="Delete">',
+                '<i class="fa fa-trash"></i>',
+                '</button>',
+                '</div>'
+            ].join('');
+        }
+
+        // Save import template function
+        function saveImportTemplate() {
+            // Create sample data for the template
+            const templateData = [
+                {
+                    "Name": "John Smith",
+                    "Position": "Software Engineer",
+                    "Department": "IT",
+                    "Salary": "$85,000",
+                    "Status": "Active",
+                    "Email": "john.smith@company.com",
+                    "Phone": "(555) 123-4567",
+                    "Hire Date": "2021-03-15",
+                    "Date of Recruitment": "2021-03-15",
+                    "Date of Last Grade": "2023-01-15",
+                    "Date of Naissance": "1980-05-12"
+                },
+                {
+                    "Name": "Jane Doe",
+                    "Position": "Product Manager",
+                    "Department": "Product",
+                    "Salary": "$95,000",
+                    "Status": "Active",
+                    "Email": "jane.doe@company.com",
+                    "Phone": "(555) 987-6543",
+                    "Hire Date": "2020-06-20",
+                    "Date of Recruitment": "2020-06-20",
+                    "Date of Last Grade": "2022-12-01",
+                    "Date of Naissance": "1963-11-30"
+                }
+            ];
+            
+            // Create worksheet
+            const ws = XLSX.utils.json_to_sheet(templateData);
+            
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Employee Template");
+            
+            // Generate Excel file and trigger download
+            XLSX.writeFile(wb, "Employee_Import_Template.xlsx");
+            
+            showToast('Import template downloaded successfully', 'Template Saved', 'success');
+        }
+
+        // Get selected IDs
+        function getIdSelections() {
+            return $.map($table.bootstrapTable('getSelections'), function(row) {
+                return row.id;
+            });
+        }
+
+        // Get selected rows
+        function getSelectedRows() {
+            return $table.bootstrapTable('getSelections');
+        }
+
+        // Open edit modal - FIXED VERSION
+        function openEditModal(row) {
+            console.log("Opening edit modal for:", row);
+            
+            const isNew = !row.id;
+            $('#editModalLabel').text(isNew ? 'Add New Employee' : `Edit Employee #${row.id}`);
+            $('#editId').val(isNew ? '' : row.id);
+            $('#editName').val(row.name || '');
+            $('#editPosition').val(row.position || '');
+            $('#editDepartment').val(row.department || '');
+            
+            // Fix salary parsing - handle both string and number formats
+            let salaryValue = '';
+            if (row.salary) {
+                if (typeof row.salary === 'string') {
+                    salaryValue = row.salary.replace('$', '').replace(',', '');
+                } else {
+                    salaryValue = row.salary.toString();
+                }
+            }
+            $('#editSalary').val(salaryValue);
+            
+            $('#editEmail').val(row.email || '');
+            $('#editPhone').val(row.phone || '');
+            $('#editHireDate').val(row.hireDate || '');
+            $('#editRecruitmentDate').val(row.recruitmentDate || '');
+            $('#editLastGradeDate').val(row.lastGradeDate || '');
+            $('#editBirthDate').val(row.birthDate || '');
+            $('#editStatus').val(row.status || 'Active');
+            
+            // Clear any validation errors
+            $('#editForm').find('.is-invalid').removeClass('is-invalid');
+            
+            $('#editModal').modal('show');
+        }
+
+        // Show employee details
+        function showEmployeeDetails(row) {
+            // Set employee details in the modal
+            $('#detailId').text(row.id);
+            $('#detailName').text(row.name);
+            $('#detailPosition').text(row.position);
+            $('#detailDepartment').text(row.department);
+            $('#detailSalary').text(row.salary);
+            $('#detailStatus').html(statusFormatter(row.status, row));
+            $('#detailEmail').text(row.email);
+            $('#detailPhone').text(row.phone || 'N/A');
+            $('#detailHireDate').text(row.hireDate ? new Date(row.hireDate).toLocaleDateString() : 'N/A');
+            $('#detailRecruitmentDate').text(row.recruitmentDate ? new Date(row.recruitmentDate).toLocaleDateString() : 'N/A');
+            $('#detailLastGradeDate').text(row.lastGradeDate ? new Date(row.lastGradeDate).toLocaleDateString() : 'N/A');
+            $('#detailBirthDate').text(row.birthDate ? new Date(row.birthDate).toLocaleDateString() : 'N/A');
+            
+            // Calculate and display age
+            const age = calculateAge(row.birthDate);
+            $('#detailAge').text(age);
+            
+            // Generate avatar based on name
+            const nameInitials = row.name.split(' ').map(n => n[0]).join('').toUpperCase();
+            $('#detailImage').attr('src', `https://ui-avatars.com/api/?name=${encodeURIComponent(nameInitials)}&background=random&size=120`);
+            
+            // Show the modal
+            $('#detailModal').modal('show');
+        }
+
+        // Save employee - FIXED VERSION
+        function saveEmployee(e) {
+            e.preventDefault();
+            
+            // Validate form
+            if (!validateEditForm()) {
+                return;
+            }
+            
+            const id = $('#editId').val();
+            const name = $('#editName').val();
+            const position = $('#editPosition').val();
+            const department = $('#editDepartment').val();
+            const salary = `$${parseFloat($('#editSalary').val()).toLocaleString()}`;
+            const email = $('#editEmail').val();
+            const phone = $('#editPhone').val();
+            const hireDate = $('#editHireDate').val();
+            const recruitmentDate = $('#editRecruitmentDate').val();
+            const lastGradeDate = $('#editLastGradeDate').val();
+            const birthDate = $('#editBirthDate').val();
+            const status = $('#editStatus').val();
+            
+            const employee = { 
+                id: id ? parseInt(id) : null, 
+                name, position, department, salary, email, phone, 
+                hireDate, recruitmentDate, lastGradeDate, birthDate, status 
+            };
+            
+            if (id) {
+                // Update existing employee
+                $table.bootstrapTable('updateRow', {
+                    index: $table.bootstrapTable('getRowByUniqueId', parseInt(id)),
+                    row: employee
+                });
+                showToast(`Employee ${id} updated successfully`, 'Update Successful', 'success');
+            } else {
+                // Add new employee
+                const tableData = $table.bootstrapTable('getData');
+                const newId = tableData.length > 0 ? Math.max(...tableData.map(emp => emp.id)) + 1 : 1;
+                employee.id = newId;
+                $table.bootstrapTable('append', employee);
+                showToast(`New employee added successfully`, 'Employee Added', 'success');
+            }
+            
+            // Save to localStorage
+            saveToLocalStorage($table.bootstrapTable('getData'));
+            
+            // Update motivation badge
+            updateMotivationBadge($table.bootstrapTable('getData'));
+            
+            $('#editModal').modal('hide');
+        }
+
+        // Form validation function
+        function validateEditForm() {
+            let isValid = true;
+            
+            // Clear previous errors
+            $('#editForm').find('.is-invalid').removeClass('is-invalid');
+            $('#editForm').find('.invalid-feedback').remove();
+            
+            // Validate required fields
+            const requiredFields = ['editName', 'editPosition', 'editDepartment', 'editSalary', 'editEmail', 'editBirthDate'];
+            requiredFields.forEach(fieldId => {
+                const field = $(`#${fieldId}`);
+                if (!field.val().trim()) {
+                    field.addClass('is-invalid');
+                    field.after('<div class="invalid-feedback">This field is required.</div>');
+                    isValid = false;
+                }
+            });
+            
+            // Validate email format
+            const emailField = $('#editEmail');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (emailField.val() && !emailRegex.test(emailField.val())) {
+                emailField.addClass('is-invalid');
+                emailField.after('<div class="invalid-feedback">Please enter a valid email address.</div>');
+                isValid = false;
+            }
+            
+            // Validate salary is a positive number
+            const salaryField = $('#editSalary');
+            if (salaryField.val() && parseFloat(salaryField.val()) <= 0) {
+                salaryField.addClass('is-invalid');
+                salaryField.after('<div class="invalid-feedback">Salary must be a positive number.</div>');
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+
+        // Delete selected employees
+        function deleteSelectedEmployees() {
+            const ids = getIdSelections();
+            if (ids.length && confirm(`Are you sure you want to delete ${ids.length} employee(s)?`)) {
+                $table.bootstrapTable('remove', {
+                    field: 'id',
+                    values: ids
+                });
+                $remove.prop('disabled', true);
+                $adminDocuments.prop('disabled', true);
+                $generateDocument.prop('disabled', true);
+                $selectionCount.text('0');
+                
+                // Save to localStorage
+                saveToLocalStorage($table.bootstrapTable('getData'));
+                
+                // Update motivation badge
+                updateMotivationBadge($table.bootstrapTable('getData'));
+                
+                showToast(`${ids.length} employee(s) deleted successfully`, 'Deletion Successful', 'success');
+            }
+        }
+
+        // Delete single employee
+        function deleteEmployee(id) {
+            if (confirm('Are you sure you want to delete this employee?')) {
+                $table.bootstrapTable('remove', {
+                    field: 'id',
+                    values: [id]
+                });
+                
+                // Save to localStorage
+                saveToLocalStorage($table.bootstrapTable('getData'));
+                
+                // Update motivation badge
+                updateMotivationBadge($table.bootstrapTable('getData'));
+                
+                showToast('Employee deleted successfully', 'Deletion Successful', 'success');
+            }
+        }
+
+        // Handle file selection for import
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                    
+                    // Clear previous preview
+                    $('#previewTable tbody').empty();
+                    
+                    // Process and preview the data
+                    const previewData = jsonData.map((row, index) => {
+                        const previewRow = {
+                            id: row.ID || row.id || index + 1,
+                            name: row.Name || row.name || `Employee ${index + 1}`,
+                            position: row.Position || row.position || 'Employee',
+                            department: row.Department || row.department || 'General',
+                            salary: row.Salary || row.salary || '$0',
+                            status: row.Status || row.status || 'Active',
+                            email: row.Email || row.email || '',
+                            phone: row.Phone || row.phone || '',
+                            hireDate: row.HireDate || row.hireDate || '',
+                            recruitmentDate: row['Date of Recruitment'] || row.recruitmentDate || '',
+                            lastGradeDate: row['Date of Last Grade'] || row.lastGradeDate || '',
+                            birthDate: row['Date of Naissance'] || row.birthDate || ''
+                        };
+                        
+                        // Add to preview table
+                        $('#previewTable tbody').append(`
+                            <tr>
+                                <td>${previewRow.id}</td>
+                                <td>${previewRow.name}</td>
+                                <td>${previewRow.position}</td>
+                                <td>${previewRow.department}</td>
+                                <td>${previewRow.salary}</td>
+                                <td>${previewRow.status}</td>
+                                <td>${previewRow.birthDate ? new Date(previewRow.birthDate).toLocaleDateString() : ''}</td>
+                            </tr>
+                        `);
+                        
+                        return previewRow;
+                    });
+                    
+                    // Store preview data for import
+                    $('#importPreview').data('importData', previewData);
+                    $('#importPreview').removeClass('d-none');
+                    $('#previewCount').text(previewData.length);
+                    $('#importData').prop('disabled', false);
+                    
+                } catch (error) {
+                    showToast('Error reading Excel file: ' + error.message, 'Import Error', 'error');
+                }
+            };
+            
+            reader.readAsArrayBuffer(file);
+        }
+
+        // Import data from Excel
+        function importData() {
+            const importData = $('#importPreview').data('importData');
+            
+            if (!importData || importData.length === 0) {
+                showToast('No data to import', 'Import Error', 'error');
+                return;
+            }
+            
+            $loadingOverlay.removeClass('d-none');
+            
+            // Reinitialize the table with imported data
+            setTimeout(() => {
+                try {
+                    // Update current data
+                    currentData = [...importData];
+                    
+                    // Reinitialize the table with the imported data
+                    initTable(importData);
+                    
+                    // Save to localStorage
+                    saveToLocalStorage(importData);
+                    
+                    // Update motivation badge
+                    updateMotivationBadge(importData);
+                    
+                    // Close modal
+                    $('#importModal').modal('hide');
+                    
+                    // Show success message
+                    showToast(`Successfully imported ${importData.length} employees`, 'Import Successful', 'success');
+                    
+                    // Reset the remove and generate document buttons
+                    $remove.prop('disabled', true);
+                    $adminDocuments.prop('disabled', true);
+                    $generateDocument.prop('disabled', true);
+                    $selectionCount.text('0');
+                } catch (error) {
+                    showToast('Error importing data: ' + error.message, 'Import Error', 'error');
+                } finally {
+                    $loadingOverlay.addClass('d-none');
+                }
+            }, 500);
+        }
+
+        // Show toast notification
+        function showToast(message, title = 'Notification', type = 'info') {
+            const toastTitle = document.getElementById('toastTitle');
+            const toastMessage = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+            
+            // Set toast content
+            toastTitle.textContent = title;
+            toastMessage.textContent = message;
+            
+            // Set icon based on type
+            let iconClass = 'fas fa-info-circle';
+            if (type === 'success') iconClass = 'fas fa-check-circle text-success';
+            if (type === 'error') iconClass = 'fas fa-exclamation-circle text-danger';
+            if (type === 'warning') iconClass = 'fas fa-exclamation-triangle text-warning';
+            
+            toastIcon.className = `${iconClass} me-2`;
+            
+            // Show toast
+            toast.show();
+        }
+    </script>
+</body>
+</html>
